@@ -42,4 +42,17 @@
   h1{
       text-align: center;
   }
+
+  .city-weather-today h1{
+      text-align: left !important;
+      line-height: 10pt;
+      padding: 10px;
+  }
+
+  .city-weather-today{
+    text-align: left !important;
+    line-height: 25pt;
+    padding: 10px;
+    font-size: 18px;
+}
   

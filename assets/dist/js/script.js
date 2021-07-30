@@ -43,11 +43,9 @@ function retrieveSearchHistory(){
 }
 
 var getSearchHistory = function (city) {
-    var apiUrl = weathermapURL + '?q=' +city + '&appid=' + appid;
+    var apiUrl = weathermapURL + '?q=' +city + '&units=imperial&appid=' + appid;
 
-    https://api.openweathermap.org/data/2.5/onecall?lat=41.85&lon=-87.65&exclude=minutely,hourly,alerts&appid=08d49bc0f4618f045068d208cad890c5
-
-    fetch(apiUrl)
+  fetch(apiUrl)
       .then(function (response) {
         if (response.ok) {
           response.json().then(function (data) {
@@ -86,13 +84,20 @@ function getSearchResults(data){
 }
 
 function displaySearchHeader(data){
+    
+    let cityName = data.name;
+    let cityTemp = data.main.temp;
+    let cityWindSpeed = data.wind.speed;
+    let cityHumidity = data.main.humidity;
+    let cityLatitude = data.coord.lat;
+    let cityLongitude = data.coord.lon;
+    let weatherDate = formatUnixDate(data.dt);
 
-    console.log(data.name);
-    console.log(data.main.temp);
-    console.log(data.wind.speed);
-                console.log(data.main.humidity);
-                    console.log(data.coord.lat);
-                        console.log(data.coord.lon);
+    $(".city-weather-today").append(`<h1>${cityName}&nbsp${weatherDate}</h1>
+    <br>Temp: ${cityTemp}F
+    <br>Wind: ${cityWindSpeed}MPH
+    <br>Humidity: ${cityHumidity}%
+    <br>UV Index: 00.00`);
 
 }
 
@@ -101,6 +106,10 @@ function displaySearchHist(data){
     console.log(dateString);
     console.log(data);
 
+}
+
+formatUnixDate = function(date){
+    return moment.unix(date).format("MM/DD/YYYY")
 }
 
 function setEventListeners(){
