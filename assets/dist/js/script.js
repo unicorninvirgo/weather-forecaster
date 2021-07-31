@@ -126,10 +126,6 @@ function displaySearchData(data, city){
     let current = data.current;
     let daily = data.daily;
 
-    let cityTemp = current.temp;
-    let cityWindSpeed = current.wind_speed;
-    let cityHumidity = current.humidity;
-    let cityUVI = current.uvi;
     let weatherDate = formatUnixDate(current.dt);
 
     let counter = 1;
@@ -144,14 +140,15 @@ function displaySearchData(data, city){
             let dailyUVI = element.uvi;
             let dailyWeatherDate = formatUnixDate(element.dt);
             let weatherIcon = "http://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png"
+    
 
             if(counter === 1){
 
                 $(".city-weather-today").append(`<h2>${city}&nbsp${weatherDate}<img src="${weatherIcon}"></h2>
-                <br>Temp: ${cityTemp}F
-                <br>Wind: ${cityWindSpeed} MPH
-                <br>Humidity: ${cityHumidity}%
-                <br>UV Index: ${cityUVI}`);
+                <br>Temp: ${dailyTemp}F
+                <br>Wind: ${dailyWindSpeed} MPH
+                <br>Humidity: ${dailyHumidity}%
+                <br>UV Index: <span id=${getUVIAttribute(dailyUVI)}>${dailyUVI}</span>`);
 
             }
             else if(counter <= 6){
@@ -170,6 +167,31 @@ function displaySearchData(data, city){
 
 }
 
+//get UVI Attribute value
+function getUVIAttribute(dailyUVI){
+    let attr = '';
+    let uvi = parseFloat(dailyUVI);
+
+    console.log(uvi);
+
+    if(dailyUVI <= 2.00){
+        attr = "low";
+    }
+    else if(dailyUVI > 2.00 && dailyUVI <= 5.00){
+        attr = "mod";
+    }
+    else if(dailyUVI > 5.00 && dailyUVI <= 7.00){
+        attr = "high";
+    }
+    else if(dailyUVI > 7.00 && dailyUVI <= 10.00){
+        attr = "very-high";
+    }
+    else{
+        attr = "extreme";
+    }
+
+    return attr;
+}
 
 //format unix date
 formatUnixDate = function(date){
