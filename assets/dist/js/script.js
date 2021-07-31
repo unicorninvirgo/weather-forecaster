@@ -9,17 +9,19 @@ let citySearch = [];
 function searchCity(event){
 
     event.preventDefault();
-    let userCitySearch =  $("#city-search").val()
+    let userCitySearch =  $("#city-search").val();
 
     citySearch.push(userCitySearch.toLowerCase());
 
-    localStorage.setItem("citySearch",JSON.stringify(citySearch));
-   
+    localStorage.setItem("citySearch",JSON.stringify(citySearch));   
+    getSearchHistory(userCitySearch);
+    $("#city-search").text('');
+    //retrieveSearchHistory();
 }
 
 function retrieveSearchHistory(){
 
-    let citySearch = JSON.parse(localStorage.getItem("citySearch"));
+    citySearch = JSON.parse(localStorage.getItem("citySearch"));
 
     if(citySearch === null)
     {
@@ -30,27 +32,31 @@ function retrieveSearchHistory(){
         citySearch.forEach(element => {
 
             $("#city-search-section-output").append(
-                `<button class="btn btn-dark" type="button" id="city-hist-btn" data-city-search="${element}">${element}</button>`
+                `<div class="d-grid gap-2 city-search-hist"><button class="btn btn-secondary btn-lg" type="button" id="city-hist-btn" data-city-search="${element}">${element}</button></div>`
             );
-
             
-        });
-     
+        });   
 
     }
-
    
 }
 
 var getSearchHistory = function (city) {
+    $(".city-weather-today").html("");
+    $(".city-weather-future").html("");
+
     var apiUrl = weathermapURL + '?q=' +city + '&units=imperial&appid=' + appid;
 
   fetch(apiUrl)
       .then(function (response) {
         if (response.ok) {
           response.json().then(function (data) {
-            displaySearchHeader(data);
-            getSearchLocation(data.coord.lat, data.coord.lon);
+            //displaySearchHeader(data);
+            var lat = data.coord.lat;
+            var lon = data.coord.lon;
+            var city = data.name;
+
+            getSearchLocation(lat, lon, city);
           });
         } else {
           alert('Error: ' + response.statusText);
@@ -61,14 +67,14 @@ var getSearchHistory = function (city) {
       });
   };
 
-  var getSearchLocation = function (lat, lon) {
-    var apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&appid=${appid}`
+var getSearchLocation = function (lat, lon, city) {
+    var apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&units=imperial&appid=${appid}`
 
     fetch(apiUrl)
       .then(function (response) {
         if (response.ok) {
           response.json().then(function (data) {
-            displaySearchHist(data);
+            displaySearchData(data, city);
           });
         } else {
           alert('Error: ' + response.statusText);
@@ -83,21 +89,38 @@ function getSearchResults(data){
     console.log(data.coord.lat);
 }
 
-function displaySearchHeader(data){
+function displaySearchData(data, city){
     
-    let cityName = data.name;
-    let cityTemp = data.main.temp;
-    let cityWindSpeed = data.wind.speed;
-    let cityHumidity = data.main.humidity;
-    let cityLatitude = data.coord.lat;
-    let cityLongitude = data.coord.lon;
-    let weatherDate = formatUnixDate(data.dt);
+    let current = data.current;
+    let daily = data.daily;
 
-    $(".city-weather-today").append(`<h1>${cityName}&nbsp${weatherDate}</h1>
-    <br>Temp: ${cityTemp}F
-    <br>Wind: ${cityWindSpeed}MPH
-    <br>Humidity: ${cityHumidity}%
-    <br>UV Index: 00.00`);
+   /* let cityName = data.name; */
+    let cityTemp = current.temp;
+    let cityWindSpeed = current.wind_speed;
+    let cityHumidity = current.humidity;
+    let cityUVI = current.uvi;
+    let weatherDate = formatUnixDate(current.dt);
+
+    $(".city-weather-today").append(`<h1>${city}&nbsp${weatherDate}</h1>
+        <br>Temp: ${cityTemp}F
+        <br>Wind: ${cityWindSpeed} MPH
+        <br>Humidity: ${cityHumidity}%
+        <br>UV Index: ${cityUVI}`);
+
+    daily.forEach( element => {
+
+        let dailyTemp = element.temp;
+        let dailyWindSpeed = element.wind_speed;
+        let dailyHumidity = element.humidity;
+        let dailyUVI = element.uvi;
+        let dailyWeatherDate = formatUnixDate(element.dt);
+
+        $(".city-weather-future").append(`<h3>${dailyWeatherDate}</h3>
+            <br>Temp: ${dailyTemp} F
+            <br>Wind: ${dailyWindSpeed} MPH
+            <br>Humidity: ${dailyHumidity}%
+            <br>UV Index: ${dailyUVI}`);
+        });
 
 }
 
@@ -114,13 +137,16 @@ formatUnixDate = function(date){
 
 function setEventListeners(){
     $("#city-search-btn").on("click",searchCity);
-    $("#city-hist-btn").on("click",function(event){});
+    $(".city-btn-list").on("click",".city-search-hist", function(event){
+        var citySearch = $(event.target).attr('data-city-search');
+        getSearchHistory(citySearch);
+    });
 }
 
 
 function init(){
 
-    getSearchHistory('atlanta');
+   // getSearchHistory('atlanta');
     retrieveSearchHistory();
     setEventListeners();
 }
