@@ -114,8 +114,10 @@ function displaySearchData(data, city){
         let dailyHumidity = element.humidity;
         let dailyUVI = element.uvi;
         let dailyWeatherDate = formatUnixDate(element.dt);
+        let weatherIcon = "http://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png"
 
         $(".city-weather-future").append(`<h3>${dailyWeatherDate}</h3>
+            <br> <img src="${weatherIcon}">
             <br>Temp: ${dailyTemp} F
             <br>Wind: ${dailyWindSpeed} MPH
             <br>Humidity: ${dailyHumidity}%
