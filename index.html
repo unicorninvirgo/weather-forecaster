@@ -3,9 +3,6 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.84.0">
     <title>Weather Forecaster Dashboard</title>
 
     <!-- Font Awesome -->
@@ -19,7 +16,6 @@
 
     <!-- Bootstrap core CSS -->
     <link href="../assets/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../assets/dist/css/style.css" rel="stylesheet">
 
     <style>
       .bd-placeholder-img {
@@ -61,7 +57,9 @@
       <div class="d-grid gap-3" style="grid-template-columns: 1fr 2fr;">
 
         <div class="border rounded-3" id="city-search-section">
-                <h2>Search for a City:</h2>
+               <div id="search-header">
+                 <h2>Search for a City:</h2>&nbsp<a href="#" id="clear">Clear History</a>
+               </div>
                   <form class="w-100 me-3">
                     <input type="search" id="city-search" class="form-control" placeholder="Search..." aria-label="Search">
                   

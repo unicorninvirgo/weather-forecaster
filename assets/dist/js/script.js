@@ -6,21 +6,24 @@ const long = "";
 
 let citySearch = [];
 
-$("#city-weather-results-section").toggle();
+//hide main section on load
+$("#city-weather-results-section").hide();
 
+//search for city data
 function searchCity(event){
 
     event.preventDefault();
+
+    //read city
     let userCitySearch =  $("#city-search").val();
-
-    citySearch.push(userCitySearch.toLowerCase());
-
-    localStorage.setItem("citySearch",JSON.stringify(citySearch));   
+  
+    //lookup
     getSearchHistory(userCitySearch);
-    $("#city-search").text('');
-    //retrieveSearchHistory();
+    
+
 }
 
+//retrieve and display search history
 function retrieveSearchHistory(){
 
     citySearch = JSON.parse(localStorage.getItem("citySearch"));
@@ -31,6 +34,8 @@ function retrieveSearchHistory(){
     }
     else{
        
+        $("#city-search-section-output").html('');
+
         citySearch.forEach(element => {
 
             $("#city-search-section-output").append(
@@ -43,33 +48,59 @@ function retrieveSearchHistory(){
    
 }
 
+//save city search
+function saveSearch(userCitySearch){
+
+    //check if searcha already exists
+    let searchHist = citySearch.filter( x => x === userCitySearch.toLowerCase());
+    
+     //only save new searches
+    if(searchHist.length === 0)
+    {
+        citySearch.push(userCitySearch.toLowerCase());
+
+        //save city
+        localStorage.setItem("citySearch",JSON.stringify(citySearch)); 
+    }  
+
+}
+
+//get city data
 var getSearchHistory = function (city) {
     $(".city-weather-today").html("");
     $(".city-weather-future").html("");
 
-    $("#city-weather-results-section").show();
-    var apiUrl = weathermapURL + '?q=' +city + '&units=imperial&appid=' + appid;
+  
+   var apiUrl = weathermapURL + '?q=' +city + '&units=imperial&appid=' + appid;
 
-  fetch(apiUrl)
+   fetch(apiUrl)
       .then(function (response) {
         if (response.ok) {
           response.json().then(function (data) {
-            //displaySearchHeader(data);
+           
+
+            saveSearch(data.name);
+            $("#city-weather-results-section").show();
+
             var lat = data.coord.lat;
             var lon = data.coord.lon;
             var city = data.name;
 
             getSearchLocation(lat, lon, city);
+
           });
         } else {
-          alert('Error: ' + response.statusText);
+            alert("Not a valid city");
         }
       })
       .catch(function (error) {
         alert('Unable to connect to Weather App');
       });
+
+      $("#city-search").val('');
   };
 
+//get detail data
 var getSearchLocation = function (lat, lon, city) {
     var apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&units=imperial&appid=${appid}`
 
@@ -78,6 +109,7 @@ var getSearchLocation = function (lat, lon, city) {
         if (response.ok) {
           response.json().then(function (data) {
             displaySearchData(data, city);
+            retrieveSearchHistory();
           });
         } else {
           alert('Error: ' + response.statusText);
@@ -88,16 +120,12 @@ var getSearchLocation = function (lat, lon, city) {
       });
   };
 
-function getSearchResults(data){
-    console.log(data.coord.lat);
-}
-
+//display data to user
 function displaySearchData(data, city){
     
     let current = data.current;
     let daily = data.daily;
 
-   /* let cityName = data.name; */
     let cityTemp = current.temp;
     let cityWindSpeed = current.wind_speed;
     let cityHumidity = current.humidity;
@@ -139,31 +167,38 @@ function displaySearchData(data, city){
          
         });
 
-}
-
-function displaySearchHist(data){
-    var dateString = moment.unix(data.current.dt).format("MM/DD/YYYY");
-    console.log(dateString);
-    console.log(data);
 
 }
 
+
+//format unix date
 formatUnixDate = function(date){
     return moment.unix(date).format("MM/DD/YYYY")
 }
 
+
+//set button and linke event listeners
 function setEventListeners(){
+    //search
     $("#city-search-btn").on("click",searchCity);
+
+    //history search
     $(".city-btn-list").on("click",".city-search-hist", function(event){
         var citySearch = $(event.target).attr('data-city-search');
         getSearchHistory(citySearch);
     });
+
+    //clear history
+    $("#clear").on("click", function(){
+        localStorage.clear();
+        location.reload();
+    })
 }
 
 
+//initiate application
 function init(){
 
-   // getSearchHistory('atlanta');
     retrieveSearchHistory();
     setEventListeners();
 }

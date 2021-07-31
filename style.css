@@ -92,3 +92,11 @@
     background-color: #3256a8;
    }
   
+ #search-header h2{
+       display: inline-block;
+   }
+
+ #search-header a{
+    color:darkgrey;
+    font-style: italic;
+}
