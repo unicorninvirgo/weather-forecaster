@@ -6,6 +6,8 @@ const long = "";
 
 let citySearch = [];
 
+$("#city-weather-results-section").toggle();
+
 function searchCity(event){
 
     event.preventDefault();
@@ -45,6 +47,7 @@ var getSearchHistory = function (city) {
     $(".city-weather-today").html("");
     $(".city-weather-future").html("");
 
+    $("#city-weather-results-section").show();
     var apiUrl = weathermapURL + '?q=' +city + '&units=imperial&appid=' + appid;
 
   fetch(apiUrl)
@@ -101,27 +104,39 @@ function displaySearchData(data, city){
     let cityUVI = current.uvi;
     let weatherDate = formatUnixDate(current.dt);
 
-    $(".city-weather-today").append(`<h1>${city}&nbsp${weatherDate}</h1>
-        <br>Temp: ${cityTemp}F
-        <br>Wind: ${cityWindSpeed} MPH
-        <br>Humidity: ${cityHumidity}%
-        <br>UV Index: ${cityUVI}`);
+    let counter = 1;
 
+    
     daily.forEach( element => {
 
-        let dailyTemp = element.temp;
-        let dailyWindSpeed = element.wind_speed;
-        let dailyHumidity = element.humidity;
-        let dailyUVI = element.uvi;
-        let dailyWeatherDate = formatUnixDate(element.dt);
-        let weatherIcon = "http://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png"
+            
+            let dailyTemp = element.temp.day;
+            let dailyWindSpeed = element.wind_speed;
+            let dailyHumidity = element.humidity;
+            let dailyUVI = element.uvi;
+            let dailyWeatherDate = formatUnixDate(element.dt);
+            let weatherIcon = "http://openweathermap.org/img/wn/" + element.weather[0].icon + "@2x.png"
 
-        $(".city-weather-future").append(`<h3>${dailyWeatherDate}</h3>
-            <br> <img src="${weatherIcon}">
-            <br>Temp: ${dailyTemp} F
-            <br>Wind: ${dailyWindSpeed} MPH
-            <br>Humidity: ${dailyHumidity}%
-            <br>UV Index: ${dailyUVI}`);
+            if(counter === 1){
+
+                $(".city-weather-today").append(`<h2>${city}&nbsp${weatherDate}<img src="${weatherIcon}"></h2>
+                <br>Temp: ${cityTemp}F
+                <br>Wind: ${cityWindSpeed} MPH
+                <br>Humidity: ${cityHumidity}%
+                <br>UV Index: ${cityUVI}`);
+
+            }
+            else if(counter <= 6){
+                $(".city-weather-future").append(`<div class="card"><h4>${dailyWeatherDate}</h4>
+                    <br> <img src="${weatherIcon}">
+                    <br>Temp: ${dailyTemp} F
+                    <br>Wind: ${dailyWindSpeed} MPH
+                    <br>Humidity: ${dailyHumidity}%
+                    <br>UV Index: ${dailyUVI}</div>`);
+            }
+
+            counter++;
+         
         });
 
 }

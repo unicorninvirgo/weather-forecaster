@@ -59,4 +59,36 @@
 .gap-2{
     padding: 5px;
 }
+
+  .card {
+    /*flex: 1 0 0;*/
+    padding: 5px;
+    /*text-align: center;*/
+    border-style: solid;
+    border-width: 1px;
+    width: 200px;
+    background-color: #3256a8;
+    color:#fff;
+    margin-right: 10px;
+  }
+  
+  .card header {
+    padding: 20px;
+    background: #13293d;
+    color: #fff;
+  }
+  
+  .card img {
+    width: 35%;
+   /* min-width: 100px;*/
+  }
+
+  .city-weather-future{
+    display: inline-flex;
+    padding: 5px;
+  }
+
+.header{
+    background-color: #3256a8;
+   }
   
